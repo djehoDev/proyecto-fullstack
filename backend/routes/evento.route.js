@@ -7,9 +7,16 @@ router.post("/", async (req, res) => {
     try {
         const nuevoEvento = new Evento(req.body);
         const eventoGuardado = await nuevoEvento.save();
-        res.status(201).json(eventoGuardado);
+        res.status(201).json({
+            mensaje: "Evento creado correctamente",
+            data: eventoGuardado
+        });
+
     } catch (error) {
-        res.status(400).json({ error: error.message });
+        res.status(400).json({
+            mensaje: "Error al crear evento",
+            error: error.message
+        });
     }
 });
 
@@ -17,10 +24,17 @@ router.post("/", async (req, res) => {
 router.get("/", async (req, res) => {
     try {
         const filtros = req.query;
-        const eventos = await Evento.find(filtros);
-        res.json(eventos);
+        const eventos = await Evento.find(filtros).sort({ fecha: 1 });
+        res.json({
+            mensaje: "Eventos obtenidos correctamente",
+            data: eventos
+        });
+
     } catch (error) {
-        res.status(500).json({ error: error.message });
+        res.status(500).json({
+            mensaje: "Error al obtener eventos",
+            error: error.message
+        });
     }
 });
 
@@ -28,10 +42,22 @@ router.get("/", async (req, res) => {
 router.get("/:id", async (req, res) => {
     try {
         const evento = await Evento.findById(req.params.id);
-        if (!evento) return res.status(404).json({ mensaje: "No encontrado" });
-        res.json(evento);
+        if (!evento) {
+            return res.status(404).json({
+                mensaje: "Evento no encontrado"
+            });
+        }
+
+        res.json({
+            mensaje: "Evento encontrado",
+            data: evento
+        });
+
     } catch (error) {
-        res.status(500).json({ error: error.message });
+        res.status(500).json({
+            mensaje: "Error al buscar evento",
+            error: error.message
+        });
     }
 });
 
@@ -43,19 +69,45 @@ router.put("/:id", async (req, res) => {
             req.body,
             { new: true }
         );
-        res.json(eventoActualizado);
+        if (!eventoActualizado) {
+            return res.status(404).json({
+                mensaje: "Evento no encontrado"
+            });
+        }
+
+        res.json({
+            mensaje: "Evento actualizado correctamente",
+            data: eventoActualizado
+        });
+
     } catch (error) {
-        res.status(400).json({ error: error.message });
+        res.status(400).json({
+            mensaje: "Error al actualizar evento",
+            error: error.message
+        });
     }
 });
 
 // Eliminar evento DELETE
 router.delete("/:id", async (req, res) => {
     try {
-        await Evento.findByIdAndDelete(req.params.id);
-        res.json({ mensaje: "Evento eliminado" });
+        const eventoEliminado = await Evento.findByIdAndDelete(req.params.id);
+
+        if (!eventoEliminado) {
+            return res.status(404).json({
+                mensaje: "Evento no encontrado"
+            });
+        }
+
+        res.json({
+            mensaje: "Evento eliminado correctamente"
+        });
+
     } catch (error) {
-        res.status(500).json({ error: error.message });
+        res.status(500).json({
+            mensaje: "Error al eliminar evento",
+            error: error.message
+        });
     }
 });
 

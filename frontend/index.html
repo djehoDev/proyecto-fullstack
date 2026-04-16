@@ -1,0 +1,38 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <title>Eventos</title>
+    <link rel="stylesheet" href="css/index.css">
+</head>
+<body>
+
+    <h1>Eventos</h1>
+
+    <div id="mensaje" role="status" aria-live="polite"></div>
+
+    <!-- Formulario -->
+    <form id="formEvento">
+        <input type="text" id="titulo" placeholder="Título" required>
+        <input type="text" id="descripcion" placeholder="Descripción">
+        <input type="date" id="fecha" required>
+        <input type="text" id="ubicacion" placeholder="Ubicación">
+        <select id="categoria">
+            <option value="">Sin categoría</option>
+            <option value="Música">Música</option>
+            <option value="Deporte">Deporte</option>
+            <option value="Cultura">Cultura</option>
+            <option value="Social">Social</option>
+        </select>
+
+        <button type="submit">Crear Evento</button>
+    </form>
+
+    <hr>
+
+    <!-- Lista -->
+    <div id="listaEventos"></div>
+
+    <script src="js/index.js"></script>
+</body>
+</html>

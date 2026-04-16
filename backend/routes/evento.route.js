@@ -5,7 +5,12 @@ const Evento = require("../models/evento.model");
 // Crear evento POST
 router.post("/", async (req, res) => {
     try {
-        const nuevoEvento = new Evento(req.body);
+        const datosEvento = {
+            ...req.body,
+            categoria: req.body.categoria?.trim() || undefined
+        };
+
+        const nuevoEvento = new Evento(datosEvento);
         const eventoGuardado = await nuevoEvento.save();
         res.status(201).json({
             mensaje: "Evento creado correctamente",

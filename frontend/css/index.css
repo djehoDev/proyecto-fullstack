@@ -1,0 +1,29 @@
+body {
+    font-family: Arial;
+    margin: 20px;
+}
+
+input, button, select {
+    display: block;
+    margin: 5px 0;
+    padding: 8px;
+}
+
+.evento {
+    border: 1px solid #ccc;
+    padding: 10px;
+    margin: 10px 0;
+}
+
+#mensaje {
+    margin: 12px 0;
+    min-height: 1.25rem;
+}
+
+#mensaje.success {
+    color: #0f7a2a;
+}
+
+#mensaje.error {
+    color: #b42318;
+}

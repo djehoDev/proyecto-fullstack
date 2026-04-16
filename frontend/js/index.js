@@ -1,3 +1,5 @@
+let eventoEditando = null;
+
 const API = "http://localhost:3000/eventos";
 
 const mensaje = document.getElementById("mensaje");
@@ -36,6 +38,10 @@ async function obtenerEventos() {
                 <button onclick="eliminarEvento('${evento._id}')">
                     Eliminar
                 </button>
+
+                <button onclick='editarEvento(${JSON.stringify(evento)})'>
+                    Editar
+                </button>
             `;
 
             lista.appendChild(div);
@@ -58,23 +64,39 @@ document.getElementById("formEvento").addEventListener("submit", async (e) => {
     };
 
     try {
-        const res = await fetch(API, {
-            method: "POST",
-            headers: {
-                "Content-Type": "application/json"
-            },
-            body: JSON.stringify(evento)
-        });
+        let res;
+
+        if (eventoEditando) {
+            res = await fetch(`${API}/${eventoEditando}`, {
+                method: "PUT",
+                headers: {
+                    "Content-Type": "application/json"
+                },
+                body: JSON.stringify(evento)
+            });
+
+            eventoEditando = null;
+
+        } else {
+            res = await fetch(API, {
+                method: "POST",
+                headers: {
+                    "Content-Type": "application/json"
+                },
+                body: JSON.stringify(evento)
+            });
+        }
 
         const data = await res.json();
 
         if (!res.ok) {
-            throw new Error(data.error || data.mensaje || "No se pudo crear el evento");
+            throw new Error(data.error || data.mensaje || "Error al guardar evento");
         }
 
         e.target.reset();
-        mostrarMensaje(data.mensaje || "Evento creado correctamente", "success");
+        mostrarMensaje(data.mensaje || "Operación exitosa", "success");
         obtenerEventos();
+
     } catch (error) {
         mostrarMensaje(error.message, "error");
     }
@@ -88,4 +110,14 @@ async function eliminarEvento(id) {
     });
 
     obtenerEventos();
+}
+
+function editarEvento(evento) {
+    eventoEditando = evento._id;
+
+    document.getElementById("titulo").value = evento.titulo;
+    document.getElementById("descripcion").value = evento.descripcion;
+    document.getElementById("fecha").value = evento.fecha.split("T")[0];
+    document.getElementById("ubicacion").value = evento.ubicacion;
+    document.getElementById("categoria").value = evento.categoria;
 }

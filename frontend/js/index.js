@@ -24,7 +24,7 @@ async function obtenerEventos() {
         const lista = document.getElementById("listaEventos");
         lista.innerHTML = "";
 
-        data.data.forEach(evento => {
+        mostrarEventos(data.data);
             const div = document.createElement("div");
             div.classList.add("evento");
 
@@ -45,7 +45,6 @@ async function obtenerEventos() {
             `;
 
             lista.appendChild(div);
-        });
     } catch (error) {
         mostrarMensaje(error.message, "error");
     }
@@ -120,4 +119,64 @@ function editarEvento(evento) {
     document.getElementById("fecha").value = evento.fecha.split("T")[0];
     document.getElementById("ubicacion").value = evento.ubicacion;
     document.getElementById("categoria").value = evento.categoria;
+}
+
+async function filtrarEventos() {
+    const categoria = document.getElementById("filtroCategoria").value;
+    const ubicacion = document.getElementById("filtroUbicacion").value;
+
+    let url = API + "?";
+
+    if (categoria) {
+        url += `categoria=${encodeURIComponent(categoria)}&`;
+    }
+
+    if (ubicacion) {
+        url += `ubicacion=${encodeURIComponent(ubicacion)}&`;
+    }
+
+    try {
+        const res = await fetch(url);
+        const data = await res.json();
+
+        mostrarEventos(data.data);
+
+    } catch (error) {
+        mostrarMensaje("Error al filtrar eventos", "error");
+    }
+}
+
+function limpiarFiltros() {
+    document.getElementById("filtroCategoria").value = "";
+    document.getElementById("filtroUbicacion").value = "";
+
+    obtenerEventos();
+}
+
+function mostrarEventos(eventos) {
+    const lista = document.getElementById("listaEventos");
+    lista.innerHTML = "";
+
+    eventos.forEach(evento => {
+        const div = document.createElement("div");
+        div.classList.add("evento");
+
+        div.innerHTML = `
+            <h3>${evento.titulo}</h3>
+            <p>${evento.descripcion || ""}</p>
+            <p><b>Fecha:</b> ${new Date(evento.fecha).toLocaleDateString("es-ES")}</p>
+            <p><b>Ubicación:</b> ${evento.ubicacion || ""}</p>
+            <p><b>Categoría:</b> ${evento.categoria || "Social"}</p>
+
+            <button onclick="eliminarEvento('${evento._id}')">
+                Eliminar
+            </button>
+
+            <button onclick='editarEvento(${JSON.stringify(evento)})'>
+                Editar
+            </button>
+        `;
+
+        lista.appendChild(div);
+    });
 }

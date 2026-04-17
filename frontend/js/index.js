@@ -23,7 +23,12 @@ async function obtenerEventos() {
         const data = await res.json();
         mostrarEventos(data.data);
     } catch (error) {
-        mostrarMensaje(error.message, "error");
+        Swal.fire({
+            icon: "error",
+            title: "Error",
+            text: error.message,
+            confirmButtonText: "OK"
+        });
     }
 }
 
@@ -70,22 +75,49 @@ document.getElementById("formEvento").addEventListener("submit", async (e) => {
         }
 
         e.target.reset();
-        mostrarMensaje(data.mensaje || "Operación exitosa", "success");
+        const mensaje = eventoEditando ? "Evento editado" : "Evento creado";
+        Swal.fire({
+            icon: "success",
+            title: mensaje,
+            showConfirmButton: false,
+            timer: 1500
+        });
         obtenerEventos();
 
     } catch (error) {
-        mostrarMensaje(error.message, "error");
+        Swal.fire({
+            icon: "error",
+            title: "Error",
+            text: error.message,
+            confirmButtonText: "OK"
+        });
     }
 });
 
 async function eliminarEvento(id) {
-    if (!confirm("¿Seguro que quiere eliminar este evento?")) return;
-
-    await fetch(`${API}/${id}`, {
-        method: "DELETE"
+    Swal.fire({
+        title: "¿Eliminar evento?",
+        text: "Esta acción no se puede deshacer",
+        icon: "warning",
+        showCancelButton: true,
+        confirmButtonColor: "#d33",
+        cancelButtonColor: "#3085d6",
+        confirmButtonText: "Sí, eliminar",
+        cancelButtonText: "Cancelar"
+    }).then(async (result) => {
+        if (result.isConfirmed) {
+            await fetch(`${API}/${id}`, {
+                method: "DELETE"
+            });
+            Swal.fire({
+                icon: "success",
+                title: "Evento eliminado",
+                showConfirmButton: false,
+                timer: 1500
+            });
+            obtenerEventos();
+        }
     });
-
-    obtenerEventos();
 }
 
 function editarEvento(evento) {
@@ -119,7 +151,12 @@ async function filtrarEventos() {
         mostrarEventos(data.data);
 
     } catch (error) {
-        mostrarMensaje("Error al filtrar eventos", "error");
+        Swal.fire({
+            icon: "error",
+            title: "Error",
+            text: "Error al filtrar eventos",
+            confirmButtonText: "OK"
+        });
     }
 }
 
@@ -146,6 +183,14 @@ function mostrarEventos(eventos) {
         
         clone.querySelector(".btnEliminar").addEventListener("click", () => eliminarEvento(evento._id));
         clone.querySelector(".btnEditar").addEventListener("click", () => editarEvento(evento));
+        clone.querySelector(".btnCompartir").addEventListener("click", () => {
+            Swal.fire({
+                icon: "success",
+                title: "Evento compartido",
+                showConfirmButton: false,
+                timer: 1500
+            });
+        });
         
         lista.appendChild(clone);
     });

@@ -16,6 +16,7 @@ const eventoSchema = new mongoose.Schema({
     },
     ubicacion: {
         type: String,
+        required: true,
         trim: true
     },
     categoria: {
